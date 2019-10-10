@@ -121,7 +121,7 @@ def fillit(squaredict,coords,mat,n):
 	return (mat)
 
 
-def doit(n,x,y):
+def doit(n,y,x):
 	counter = 1
 	coords = (x,y)
 	mat = matrix(n) #generates empty (filled with 0) matrix, if only one var is give the matrix will be quadratic
