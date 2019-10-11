@@ -26,8 +26,6 @@ class matrix(list):
 				ret += " "+str(y)+" "
 			ret+="|\n"
 		return ret
-	def __len__(self):
-		return self.n*self.m
 	def __getitem__(self,key):
 		try:return matrix(1,c=self.id[key],mother=self,motherkey=key)
 		except IndexError:
