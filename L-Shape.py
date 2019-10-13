@@ -1,5 +1,12 @@
-SYMBOLLIST = ("-","+","*","%","=")
-a = SYMBOLLIST[0]
+import showit
+def tileup(tileval=0):
+	VALS = (5,10,15,20,25,30,35)
+	if tileval==VALS[-1] or tileval==0:
+		tileval=VALS[0]
+	else:
+		tileval=VALS[VALS.index(tileval)+1]
+	return tileval
+tileval = tileup()
 def fillist(n,c=0):
 		ret = []
 		for x in range(0,n):
@@ -35,6 +42,8 @@ class matrix(list):
 			self.mother.id[self.motherkey][key] = value
 		else:
 			self.id[key] = value
+	def __len__(self):
+		return self.m*self.n
 
 
 
@@ -78,26 +87,19 @@ def center(point,s): #gives the 4 center point coordinates of a s sized square t
 		]
 	return centerpoints
 
-def switchy(a):
-	global SYMBOLLIST
-	if SYMBOLLIST.index(a)>=len(SYMBOLLIST)-1:
-		a = SYMBOLLIST[0]
-	else:
-		a = SYMBOLLIST[SYMBOLLIST.index(a)+1]
-	return a
 
-def fillit(squaredict,coords,mat,n): 
-	global a
-	switchy(a)
+def fillit(squaredict,coords,mat,n,statelist): 
+	global tileval
 	if n==2:
 		needya =search(coords[0],coords[1],squaredict[n],n)
 		therest = needya.copy()
 		therest.remove((coords[0],coords[1]))
 		for i in therest:
-			mat[i[0]][i[1]] = a
-		a = switchy(a)
+			mat[i[0]][i[1]] = tileval
+		statelist.addstate(mat.id)
+		tileval=tileup(tileval)
 	else:
-		mat = (fillit(squaredict,coords,mat,int(n/2)))
+		mat = (fillit(squaredict,coords,mat,int(n/2),statelist))
 		thepoint = search(coords[0],coords[1],squaredict[n],n)
 		ctp = center(thepoint[0],n)
 		for i in ctp:
@@ -107,26 +109,30 @@ def fillit(squaredict,coords,mat,n):
 			raise ValueError
 		for i in ctp:
 			buoys.append(search(i[0],i[1],squaredict[int(n/2)],int(n/2)))
-			mat[i[0]][i[1]] = a
-		a = switchy(a)
+			mat[i[0]][i[1]] = tileval
+		statelist.addstate(mat.id)
+		tileval=tileup(tileval)
 		therealG = []
 		for i in buoys:
 			for j in i:
 				if(mat.id[j[0]][j[1]] !=0):
 					therealG.append(j)
 		for i in therealG:
-			mat = fillit(squaredict,i,mat,int(n/2))
+			mat = fillit(squaredict,i,mat,int(n/2),statelist)
 	return (mat)
 
 
 def doit(n,y,x):
-	counter = 1
+	global tileval
 	coords = (x,y)
 	mat = matrix(n) #generates empty (filled with 0) matrix, if only one var is give the matrix will be quadratic
-	mat[x][y] = "X"
+	mat[x][y] = 99
+	states = showit.statelist()
+	states.addstate(mat.id)
 	squaredict = filldict(n,n) #dict with beginning coords (upper left) for every possible 2^k with k<=n square that fits inside nxn field, keys are 2^k
-	mat = fillit(squaredict,coords,mat,n)
-	print(mat)
+	mat = fillit(squaredict,coords,mat,n,states)
+	#print(mat)
+	showit.animo(states.states)
 n = int(input("give the dimensions (must be a power of 2): \n"))
 x = int(input("give an x coordinate, must be an integer and positive: \n"))
 y = int(input("give an y coordinate, must be an integer and positive: \n"))
