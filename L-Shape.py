@@ -1,4 +1,7 @@
 import showit
+
+dir = 0
+
 def tileup(tileval=0):
 	VALS = (5,10,15,20,25,30,35)
 	if tileval==VALS[-1] or tileval==0:
@@ -45,8 +48,6 @@ class matrix(list):
 	def __len__(self):
 		return self.m*self.n
 
-
-
 def filldict(n,s,thedict={}):
 	thedict[s] = []
 	for i in range(0,n,s):
@@ -60,7 +61,7 @@ def filldict(n,s,thedict={}):
 
 
 def search(x,y,targets,s): #finds the s*s (sub)square that contains a point (x,y)
-	needya = False
+	needya = False #kinda blackbox... but does what it should
 	breakit = False
 	finishit = False
 
@@ -87,15 +88,45 @@ def center(point,s): #gives the 4 center point coordinates of a s sized square t
 		]
 	return centerpoints
 
+def colourize(points,mat):
+	global dir
+	cols = [1,25,50,75]
+	changes = (
+		(0,1),
+		(0,-1),
+		(1,0),
+		(-1,0),
+	)
 
+
+	if(len(points)!= 3):
+		raise ValueError("False len of input")
+	surround = []
+	for (x,y) in points:
+		for (a,b) in changes:
+			new = (x+a,y+b)
+			if new not in surround: surround.append(new)
+	for (x,y) in surround:
+		try:
+			colFound = mat.id[x][y]
+			if colFound in cols: cols.remove(colFound)
+		except IndexError:
+			continue	
+	toColor = cols[0+dir]
+	dir = 0 if dir <0 else -1 #more change between the selected color 
+	for (x,y) in points:
+		mat[x][y] = toColor
+
+ #TODO add method for coloring that takes coords of the three fields that should be colored
 def fillit(squaredict,coords,mat,n,statelist): 
 	global tileval
 	if n==2:
 		needya =search(coords[0],coords[1],squaredict[n],n)
 		therest = needya.copy()
 		therest.remove((coords[0],coords[1]))
-		for i in therest:
-			mat[i[0]][i[1]] = tileval
+		#for i in therest:
+		#	mat[i[0]][i[1]] = tileval #FIXME coloring #therest contains coords of 3 fields :check
+		colourize(therest,mat) #CHANGED
 		statelist.addstate(mat.id)
 		tileval=tileup(tileval)
 	else:
@@ -107,9 +138,10 @@ def fillit(squaredict,coords,mat,n,statelist):
 		buoys = []
 		if len(ctp)>3:
 			raise ValueError
-		for i in ctp:
+		for i in ctp: #ctp = centerpoints
 			buoys.append(search(i[0],i[1],squaredict[int(n/2)],int(n/2)))
-			mat[i[0]][i[1]] = tileval
+			#mat[i[0]][i[1]] = tileval #color the three centerpoints FIXME coloring #ctp contains coords of 3 fields :check
+		colourize(ctp,mat)
 		statelist.addstate(mat.id)
 		tileval=tileup(tileval)
 		therealG = []
@@ -126,7 +158,7 @@ def doit(n,y,x):
 	global tileval
 	coords = (x,y)
 	mat = matrix(n) #generates empty (filled with 0) matrix, if only one var is give the matrix will be quadratic
-	mat[x][y] = 99
+	mat[x][y] = 200
 	states = showit.statelist()
 	states.addstate(mat.id)
 	squaredict = filldict(n,n) #dict with beginning coords (upper left) for every possible 2^k with k<=n square that fits inside nxn field, keys are 2^k
