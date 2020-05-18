@@ -117,16 +117,13 @@ def colourize(points,mat):
 	for (x,y) in points:
 		mat[x][y] = toColor
 
- #TODO add method for coloring that takes coords of the three fields that should be colored
 def fillit(squaredict,coords,mat,n,statelist): 
 	global tileval
 	if n==2:
 		needya =search(coords[0],coords[1],squaredict[n],n)
 		therest = needya.copy()
 		therest.remove((coords[0],coords[1]))
-		#for i in therest:
-		#	mat[i[0]][i[1]] = tileval #FIXME coloring #therest contains coords of 3 fields :check
-		colourize(therest,mat) #CHANGED
+		colourize(therest,mat) #colorize the 3 fields in therest while making sure there are no color colisions
 		statelist.addstate(mat.id)
 		tileval=tileup(tileval)
 	else:
@@ -140,7 +137,6 @@ def fillit(squaredict,coords,mat,n,statelist):
 			raise ValueError
 		for i in ctp: #ctp = centerpoints
 			buoys.append(search(i[0],i[1],squaredict[int(n/2)],int(n/2)))
-			#mat[i[0]][i[1]] = tileval #color the three centerpoints FIXME coloring #ctp contains coords of 3 fields :check
 		colourize(ctp,mat)
 		statelist.addstate(mat.id)
 		tileval=tileup(tileval)
