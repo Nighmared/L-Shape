@@ -42,7 +42,7 @@ def animo(statelist: list, export=False):
 		if(len(statelist)<100): #change speed of gif depending on amount of states ~ size of matrix
 			fps = 15
 		else:
-			fps = 40
+			fps = 30
 		writer = animation.ImageMagickFileWriter(fps=fps) #very important when using `writer='imagemagick'` shit doesn't work!!!!!
 		anim.save('docs/img/recent.gif',writer=writer,progress_callback=printprog) #needs to have imagemagick installed :)
 	else:
