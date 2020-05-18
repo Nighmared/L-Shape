@@ -1,15 +1,8 @@
 import showit
 
 dir = 0
+states = []
 
-def tileup(tileval=0):
-	VALS = (5,10,15,20,25,30,35)
-	if tileval==VALS[-1] or tileval==0:
-		tileval=VALS[0]
-	else:
-		tileval=VALS[VALS.index(tileval)+1]
-	return tileval
-tileval = tileup()
 def fillist(n,c=0):
 		ret = []
 		for x in range(0,n):
@@ -36,17 +29,24 @@ class matrix(list):
 				ret += " "+str(y)+" "
 			ret+="|\n"
 		return ret
-	def __getitem__(self,key):
+	def __getitem__(self,key):  #don't touch
 		try:return matrix(1,c=self.id[key],mother=self,motherkey=key)
 		except IndexError:
 			return self.id[0][key]
-	def __setitem__(self,key,value):
-		if self.mother !=0:
+	def __setitem__(self,key,value): #touch even less
+		if self.mother !=0: 
 			self.mother.id[self.motherkey][key] = value
 		else:
 			self.id[key] = value
 	def __len__(self):
 		return self.m*self.n
+
+def copyThisBitch(matID):
+	new = []
+	for i in range(len(matID)):
+		new.append(matID[i].copy())
+	return new
+
 
 def filldict(n,s,thedict={}):
 	thedict[s] = []
@@ -117,17 +117,16 @@ def colourize(points,mat):
 	for (x,y) in points:
 		mat[x][y] = toColor
 
-def fillit(squaredict,coords,mat,n,statelist): 
-	global tileval
+def fillit(squaredict,coords,mat,n): 
+	global states
 	if n==2:
 		needya =search(coords[0],coords[1],squaredict[n],n)
 		therest = needya.copy()
 		therest.remove((coords[0],coords[1]))
 		colourize(therest,mat) #colorize the 3 fields in therest while making sure there are no color colisions
-		statelist.addstate(mat.id)
-		tileval=tileup(tileval)
+		states.append(copyThisBitch(mat.id))
 	else:
-		mat = (fillit(squaredict,coords,mat,int(n/2),statelist))
+		mat = (fillit(squaredict,coords,mat,int(n/2)))
 		thepoint = search(coords[0],coords[1],squaredict[n],n)
 		ctp = center(thepoint[0],n)
 		for i in ctp:
@@ -138,29 +137,26 @@ def fillit(squaredict,coords,mat,n,statelist):
 		for i in ctp: #ctp = centerpoints
 			buoys.append(search(i[0],i[1],squaredict[int(n/2)],int(n/2)))
 		colourize(ctp,mat)
-		statelist.addstate(mat.id)
-		tileval=tileup(tileval)
+		states.append(copyThisBitch(mat.id))
 		therealG = []
 		for i in buoys:
 			for j in i:
 				if(mat.id[j[0]][j[1]] !=0):
 					therealG.append(j)
 		for i in therealG:
-			mat = fillit(squaredict,i,mat,int(n/2),statelist)
+			mat = fillit(squaredict,i,mat,int(n/2))
 	return (mat)
 
 
 def doit(n,y,x):
-	global tileval
+	global states
 	coords = (x,y)
 	mat = matrix(n) #generates empty (filled with 0) matrix, if only one var is give the matrix will be quadratic
 	mat[x][y] = 200
-	states = showit.statelist()
-	states.addstate(mat.id)
+	states.append(copyThisBitch(mat.id))
 	squaredict = filldict(n,n) #dict with beginning coords (upper left) for every possible 2^k with k<=n square that fits inside nxn field, keys are 2^k
-	mat = fillit(squaredict,coords,mat,n,states)
-	#print(mat)
-	showit.animo(states.states)
+	mat = fillit(squaredict,coords,mat,n)
+	showit.animo(states,True)
 n = int(input("give the dimensions (must be a power of 2): \n"))
 x = int(input("give an x coordinate, must be an integer and positive: \n"))
 y = int(input("give an y coordinate, must be an integer and positive: \n"))
