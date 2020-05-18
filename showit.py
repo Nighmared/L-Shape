@@ -1,24 +1,30 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-CMAP = "viridis" # possible values include 'viridis', 'plasma', 'inferno', 'magma', 'cividis' 
+CMAP = "viridis" #Color map used by matplotlib
+# possible values include 'viridis', 'plasma', 'inferno', 'magma', 'cividis' 
 
-toDisplay = []
+toDisplay = [] #global variables #FIXME use OOP
 im = None
 
-def funcAnim(frame):
+def funcAnim(frame: int):
+	'''provided to the animation, updates current state
+	of the animation depending on the frame'''
 	global im,toDisplay
 	im.set_data(toDisplay[frame])
 	return [im]
 
-def printprog(currFr:int,totFr:int):
+def printprog(currFr:int, totFr:int) -> None:
 	print(f"{currFr}/{totFr} Frames saved",end="\r")
 
-def animo(statelist,export=False):
+def animo(statelist: list, export=False):
+	'''Visualize the matrix states contained in statelist (as lists of lists) by using matplotlib
+	
+	`export` argument defaults to False and decides if the animation is shown on-screen or saved as gif'''
 	global toDisplay
 	global im
 
-	stateNum = len(statelist)
+	stateNum = len(statelist) #set delay between updates of figure depending on amount of states which is relative to the size
 	if stateNum > 400:
 		interval = 15
 	elif stateNum>200:
@@ -29,15 +35,16 @@ def animo(statelist,export=False):
 		interval = 80
 
 	fig = plt.gcf() #maybe this and .figure both work but now that its running i aint touching it
-	toDisplay = statelist
-	im = plt.imshow(toDisplay[0],cmap=CMAP)
+	toDisplay = statelist # make global... dumb TODO use OOP
+	im = plt.imshow(toDisplay[0],cmap=CMAP) # set initial frame, also initialize im
 	anim = animation.FuncAnimation(fig,funcAnim,frames=len(toDisplay),interval = interval, repeat=False, blit=True)
 	if(export):
-		if(len(statelist<100)):
+		if(len(statelist)<100): #change speed of gif depending on amount of states ~ size of matrix
 			fps = 15
 		else:
 			fps = 40
-		writer = animation.ImageMagickFileWriter(fps=fps) #very important !!!!!
-		anim.save('docs/img/anim.gif',writer=writer,progress_callback=printprog) #needs to have imagemagick installed :)
+		writer = animation.ImageMagickFileWriter(fps=fps) #very important when using `writer='imagemagick'` shit doesn't work!!!!!
+		anim.save('docs/img/recent.gif',writer=writer,progress_callback=printprog) #needs to have imagemagick installed :)
 	else:
-		plt.show()
+		fig.suptitle("L-Shape Animation")
+		plt.show() #display matplotlib animation
