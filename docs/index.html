@@ -8,6 +8,7 @@
 
 <body id="sub1">
 	<script src="https://nighmared.me/script.js" defer></script>
+	
 	<div id="content" class="maindiv">
 		<div class="centerthat">
 			<div class="subsite">
@@ -25,27 +26,27 @@
 			<p>A deprecated version of a part of the code can be seen with a click onto the button below, Github might be the better choice<br>
 			<button id="button1" onclick="showcode('here','button1');">Show Code</button> <a href="https://github.com/nighmared/L-Shape"><button>Github Repo</button></a></p>
 			<h3>Examples</h3>
-			<table>
+			<table style="margin-left:auto;margin-right:auto;">
 				<tr>
 					<td>
-						<img class="impression" src="img/Figure_1.png">
+						<img id=1 class="impression" onclick="swap(1);" src="img/Figure_1.png">
 
 					</td>
 					<td>
-						<img class="impression" src="img/Figure_2.png">
+						<img id=2 class="impression" onclick="swap(2);" src="img/Figure_2.png">
 					</td>
 					<td>
-						<img class="impression" src="img/Figure_3.png">
+						<img id=3 class="impression" onclick="swap(3);" src="img/Figure_3.png">
 					</td>
 					<td>
-						<img class="impression" src="img/Figure_4.png">
+						<img id=4 class="impression" onclick="swap(4);" src="img/Figure_4.png">
 					</td>
 					
 				</tr>
 			</table>
-			<table>
+			<table style="margin-left:auto;margin-right:auto;">
 					<td>
-						<img src="img/Show32.gif">
+						<img id = "main" style="width: 100%;" src="img/Show32.gif">
 					</td>
 				</tr>
 
@@ -59,4 +60,13 @@
 	</div>
 <div class="sidebar" id="foot" onmouseover="expand();"onmouseout="small();">η</div>
 </body>
+<script>
+	const main = document.getElementById("main");
+	function swap(id){
+		let orig = document.getElementById(id);
+		let origSrc = orig.src
+		orig.src = main.src;
+		main.src = origSrc;
+	}
+	</script>
 </html>
