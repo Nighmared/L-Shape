@@ -172,10 +172,10 @@ def doit(n: int, y: int, x: int) -> None:
 	states.append(mat.copy()) #add initial state of matrix for visualization
 	squaredict = filldict(n,n) #dict with beginning coords (upper left) for every possible 2^k with k<=n square that fits inside nxn field, keys are 2^k
 	mat = fillit(squaredict,coords,mat,n)
-	showit.animo(states,EXPORT) #visualize
+	showit.animo(states,n,EXPORT) #visualize
 
-	if __name__ == '__main__':
-		n = int(input("give the dimensions (must be a power of 2): \n"))
-		x = int(input("give an x coordinate, must be an integer and positive: \n"))
-		y = int(input("give an y coordinate, must be an integer and positive: \n"))
-		doit(n,x,y)
+if __name__ == '__main__':
+	n = int(input("give the dimensions (must be a power of 2): \n"))
+	x = int(input("give an x coordinate, must be an integer and positive: \n"))
+	y = int(input("give an y coordinate, must be an integer and positive: \n"))
+	doit(n,x,y)

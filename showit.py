@@ -17,7 +17,7 @@ def funcAnim(frame: int):
 def printprog(currFr:int, totFr:int) -> None:
 	print(f"{currFr}/{totFr} Frames saved",end="\r")
 
-def animo(statelist: list, export=False):
+def animo(statelist: list, size: int, export=False):
 	'''Visualize the matrix states contained in statelist (as lists of lists) by using matplotlib
 	
 	`export` argument defaults to False and decides if the animation is shown on-screen or saved as gif'''
@@ -38,13 +38,15 @@ def animo(statelist: list, export=False):
 	toDisplay = statelist # make global... dumb TODO use OOP
 	im = plt.imshow(toDisplay[0],cmap=CMAP) # set initial frame, also initialize im
 	anim = animation.FuncAnimation(fig,funcAnim,frames=len(toDisplay),interval = interval, repeat=False, blit=True)
+	fig.suptitle(f"L-Shape Animation {size}x{size}")
 	if(export):
 		if(len(statelist)<100): #change speed of gif depending on amount of states ~ size of matrix
-			fps = 15
+			fps = 3
+		elif (len(statelist)<1000):
+			fps = 7
 		else:
 			fps = 30
 		writer = animation.ImageMagickFileWriter(fps=fps) #very important when using `writer='imagemagick'` shit doesn't work!!!!!
 		anim.save('docs/img/recent.gif',writer=writer,progress_callback=printprog) #needs to have imagemagick installed :)
 	else:
-		fig.suptitle("L-Shape Animation")
 		plt.show() #display matplotlib animation
