@@ -99,7 +99,7 @@ def colourize(points: list, mat: Matrix) -> None:
 	if no valid coloring can be found (probably only very rarely) the current
 	fields are marked brightly and the matrix is displayed '''
 	global dir
-	cols = [5,25,45,65,75,100]
+	cols = [1,25,50,75,100]
 	changes = (
 		(0,1),
 		(0,-1),
@@ -115,18 +115,19 @@ def colourize(points: list, mat: Matrix) -> None:
 		for (a,b) in changes:
 			new = (x+a,y+b)
 			if new not in surround: surround.append(new)
+	surround = list(filter(lambda x: x[0]>0 and x[0]<len(mat.id) and x[1]>0 and x[1]<len(mat.id[0]),surround )) #filter ivalid coords
 	for (x,y) in surround:
-		try:
-			colFound = mat.id[x][y]
-			if colFound in cols: cols.remove(colFound)
-		except IndexError:
-			continue	
-	try:toColor = cols[0+dir]
+		colFound = mat.id[x][y]
+		if colFound in cols: 
+			cols.remove(colFound)
+	
+	try:toColor = cols[0]
 	except IndexError:
+		print(len(cols))
 		for (x,y) in points:
 			mat[x][y] = 999
 		states.append(mat.copy())
-		showit.animo(states)
+		showit.animo(states,len(mat.id))
 	dir = 0 if dir <0 else -1 #more change between the selected color 
 	for (x,y) in points:
 		mat[x][y] = toColor
